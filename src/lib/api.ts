@@ -112,7 +112,7 @@ async function request(
         window.dispatchEvent(new Event("password-required"));
       const message =
         code === "CSRF_INVALID"
-          ? "Your session could not be verified. Refresh the page and try again. If this continues, contact your administrator."
+          ? "Your session could not be verified. Make sure cookies are enabled for this site, refresh the page and try again. If this continues, contact your administrator."
           : response.status >= 500
           ? "The service is temporarily unavailable. Please try again."
           : response.status === 429

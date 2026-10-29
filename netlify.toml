@@ -7,19 +7,22 @@
 [build.environment]
   NODE_VERSION = "22"
 
-# --- OPTIONAL "Option B": same-origin API proxy (recommended when you cannot use a shared custom domain) --------
-# Leave VITE_API_URL empty and uncomment this rule so the browser only ever talks to the Netlify origin; the
-# session cookie then becomes first-party and works in Safari/iOS and browsers that block third-party cookies.
-# Replace the URL with your Railway public URL. Must appear BEFORE the SPA fallback below.
-# Caveats: Netlify proxied requests time out after ~26 s (large exports may fail) - see the README.
+# --- OPTIONAL "Option B": same-origin API proxy (most robust fix for the login 403 on *.netlify.app + *.onrender.com) ---
+# Netlify (*.netlify.app) and Render (*.onrender.com) are different SITES, so the API session cookie is third-party and is
+# dropped by Safari/iOS and by browsers that block third-party cookies, even with SameSite=None. To make it first-party:
+#   1. Netlify env: leave VITE_API_URL EMPTY (and delete it from .env.production) so the app calls same-origin /api.
+#   2. Uncomment the two rules below (they must stay BEFORE the SPA fallback).
+#   3. Render env: keep FRONTEND_URL=<this Netlify origin>, COOKIE_SECURE=true, TRUST_PROXY=1; COOKIE_SAME_SITE=lax is then fine.
+# Caveats (NOT VERIFIED at runtime): Netlify proxied requests time out after ~26 s (large exports may fail), and the API then
+# sees Netlify's edge as the client IP, so per-IP rate limits (login/API) are shared - check TRUST_PROXY hop count/limits.
 # [[redirects]]
 #   from = "/api/*"
-#   to = "https://YOUR-API.up.railway.app/api/:splat"
+#   to = "https://pnms-backend.onrender.com/api/:splat"
 #   status = 200
 #   force = true
 # [[redirects]]
 #   from = "/health/*"
-#   to = "https://YOUR-API.up.railway.app/health/:splat"
+#   to = "https://pnms-backend.onrender.com/health/:splat"
 #   status = 200
 #   force = true
 
