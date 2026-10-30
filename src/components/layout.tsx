@@ -178,14 +178,17 @@ export default function Layout() {
               Account settings
             </NavLink>
           )}
-          <NavLink
-            to="/password"
-            className="settings-link"
-            onClick={() => setMenu(false)}
-          >
-            <Settings size={18} />
-            Account security
-          </NavLink>
+          {/* Password management lives inside Account settings; this link is only needed while a password change is forced. */}
+          {user.mustChangePassword && (
+            <NavLink
+              to="/password"
+              className="settings-link"
+              onClick={() => setMenu(false)}
+            >
+              <Settings size={18} />
+              Account security
+            </NavLink>
+          )}
           <button
             className="logout"
             disabled={leaving}
