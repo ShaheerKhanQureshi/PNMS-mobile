@@ -82,7 +82,15 @@ export default function Scanner({
         controls.current = scanner;
         setRequesting(false);
         setTorchOn(false);
-        setTorchSupported(Boolean(videoTrack()?.getCapabilities?.()?.torch));
+        setTorchSupported(
+  Boolean(
+    (
+      videoTrack()?.getCapabilities?.() as
+        (MediaTrackCapabilities & { torch?: boolean }) | undefined
+    )?.torch
+  )
+);
+        // setTorchSupported(Boolean(videoTrack()?.getCapabilities?.()?.torch));
         const cameras = await BrowserQRCodeReader.listVideoInputDevices();
         if (!cancelled) setDevices(cameras);
       })
