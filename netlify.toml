@@ -1,0 +1,67 @@
+# Netlify build + hosting configuration for the PNMS frontend (a static single-page app).
+# Set VITE_API_URL (and the other VITE_* values from .env.example) in Netlify -> Site settings -> Environment variables.
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# --- OPTIONAL "Option B": same-origin API proxy (recommended when you cannot use a shared custom domain) --------
+# Leave VITE_API_URL empty and uncomment this rule so the browser only ever talks to the Netlify origin; the
+# session cookie then becomes first-party and works in Safari/iOS and browsers that block third-party cookies.
+# Replace the URL with your Railway public URL. Must appear BEFORE the SPA fallback below.
+# Caveats: Netlify proxied requests time out after ~26 s (large exports may fail) - see the README.
+[[redirects]]
+  from = "/api/*"
+  to = "https://pnms-backend.onrender.com/api/:splat"
+  status = 200
+  force = true
+[[redirects]]
+  from = "/health/*"
+  to = "https://pnms-backend.onrender.com/health/:splat"
+  status = 200
+  force = true
+
+# Single-page-app fallback: any path that is not a real file serves index.html (deep links, refresh, /staff ...).
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "no-referrer"
+    Strict-Transport-Security = "max-age=63072000"
+    X-Frame-Options = "DENY"
+    Cross-Origin-Opener-Policy = "same-origin"
+    # Strictest policy compatible with the bundle: no inline/eval scripts; inline styles are required by Tailwind/recharts;
+    # connect-src allows any HTTPS API origin because the Railway URL is not known at build time - tighten it to
+    # "'self' https://pnms-backend.onrender.com" once the final API domain is fixed.
+    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://pnms-backend.onrender.com; worker-src 'self'; manifest-src 'self'; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
+    Permissions-Policy = "camera=(self), microphone=(), geolocation=()"
+
+# The HTML shell must always be revalidated so users pick up new deployments.
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "no-cache"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache, max-age=0, must-revalidate"
+    Service-Worker-Allowed = "/"
+
+[[headers]]
+  for = "/manifest.webmanifest"
+  [headers.values]
+    Cache-Control = "no-cache"
+    Content-Type = "application/manifest+json"

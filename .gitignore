@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.production
+!.env.example
+certs/
+*.pem
+*.log
+coverage/
+test-results/
+playwright-report/
+*.tsbuildinfo
+.DS_Store

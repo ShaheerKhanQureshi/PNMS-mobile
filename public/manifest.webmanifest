@@ -1,0 +1,20 @@
+{
+  "id": "/",
+  "name": "Patient Non-Compliance Monitoring System",
+  "short_name": "PNMS",
+  "description": "ChildLife Foundation secure staff portal for patient non-compliance observations, reporting and administration.",
+  "lang": "en",
+  "dir": "ltr",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#165d48",
+  "background_color": "#f6f8f6",
+  "categories": ["medical", "business"],
+  "icons": [
+    { "src": "/pwa-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/pwa-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/pwa-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
